@@ -1,0 +1,16 @@
+server:
+  port: 8686
+spring:
+  datasource:
+    druid:
+      name: kg_daily
+      url: jdbc:mysql://localhost:3306/kg_daily?useSSL=false&allowMultiQueries=true&autoReconnect=true&useUnicode=true&characterEncoding=utf-8
+      username: root
+      password: root
+  servlet:
+    multipart:
+      max-file-size: 52428800
+      max-request-size: 52428800
+debug: true
+logging:
+  path: /root/logs/

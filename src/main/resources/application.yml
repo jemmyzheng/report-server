@@ -1,0 +1,56 @@
+spring:
+  session:
+    timeout: 3600s
+  profiles:
+    active: @profileActive@
+  mvc:
+    throw-exception-if-no-handler-found: true
+  application:
+    name: kg-report
+  datasource:
+    druid:
+      db-type: mysql
+      driver-class-name: com.mysql.jdbc.Driver
+      max-active: 200 #连接池最大值
+      initial-size: 10 # 初始化大小
+      max-wait: 30000 #获取连接最大等待时间
+      min-idle: 10  #连接池最小空闲
+      time-between-eviction-runs-millis: 30000 #逐出连接的检测时间间隔
+      min-evictable-idle-time-millis: 30000 #最小逐出时间
+      validation-query: SELECT 1 #检测连接是否有效的SQL
+      testWhileIdle: true #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效
+      testOnBorrow: false #借出连接时是否做测试
+      testOnReturn: true #归还连接时是否做测试
+      removeAbandoned: true #超过时间限制是否回收
+      removeAbandonedTimeout: 3600 # 超过时间限制多长
+      max-pool-prepared-statement-per-connection-size:  50 #启用PSCache
+      filter:
+        stat:
+          enabled: true
+        wall:
+          enabled: true
+        config:
+          enabled: true
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.kg.report.model.po
+  configuration:
+    cache-enabled: true #全局映射器启用缓存
+    multiple-result-sets-enabled: true #对于未知的SQL查询，允许返回不同的结果集以达到通用的效果
+    use-column-label: true #允许使用列标签代替列名
+    use-generated-keys: false #不允许使用自定义的主键值(比如由程序生成的UUID 32位编码作为键值)，数据表的PK生成策略将被覆盖 -
+    auto-mapping-behavior: partial #给予被嵌套的resultMap以字段-属性的映射支持 FULL,PARTIAL
+    safe-row-bounds-enabled: false #允许在嵌套语句上使用RowBounds
+    mapUnderscoreToCamelCase: true #自动映射
+    localCacheScope: session #缓存会话范围
+    jdbcTypeForNull: other #当没有特定的JDBC类型时，指定空值的JDBC类型为参数提供了。 某些驱动程序需要指定列JDBC类型但其他类型使用泛型值，如NULL，VARCHAR或OTHER
+    lazyLoadTriggerMethods: equals,clone,hashCode,toString #指定哪个Object的方法触发延迟加载
+    aggressive-lazy-loading: false # 设置关联对象加载的形态，此处为按需加载字段(加载字段由SQL指 定)，不会加载关联表的所有字段，以提高性能
+pagehelper:
+  offset-as-page-num: true #设置为true时，会将RowBounds第一个参数offset当成pageNum页码使用
+  row-bounds-with-count: true #设置为true时，使用RowBounds分页会进行count查询
+  page-size-zero: true #如果pageSize=0或者RowBounds.limit = 0就会查询出全部的结果
+  reasonable: false #禁用合理化时，如果pageNum<1或pageNum>pages会返回空数据
+  params: pageNum=pageHelperStart;pageSize=pageHelperRows;  #可以配置pageNum,pageSize,count,pageSizeZero,reasonable,orderBy,不配置映射的用默认值
+  support-methods-arguments: false #是否 支持通过Mapper接口参数来传递分页参数
+  helper-dialect: mysql

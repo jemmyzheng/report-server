@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.ReportFieldMapper">
+  <resultMap id="BaseResultMap" type="com.kg.report.model.po.ReportFieldPO">
+    <id column="Freport_id" jdbcType="INTEGER" property="reportId" />
+    <id column="Ffield_id" jdbcType="INTEGER" property="fieldId" />
+  </resultMap>
+  <resultMap id="FieldMap" type="com.kg.report.model.po.FieldPO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="Ffield_name" jdbcType="VARCHAR" property="name" />
+    <result column="Ffield_type" jdbcType="SMALLINT" property="type" />
+    <result column="Frequired" jdbcType="SMALLINT" property="required" />
+    <result column="Fadd_time" jdbcType="TIMESTAMP" property="addTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from t_report_field
+    where Freport_id = #{reportId,jdbcType=INTEGER}
+      and Ffield_id = #{fieldId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kg.report.model.po.ReportFieldPO">
+    insert into t_report_field (Freport_id, Ffield_id)
+    values (#{reportId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER})
+  </insert>
+  <insert id="batchAddReportField" >
+    INSERT INTO t_report_field
+    (
+    Freport_id, Ffield_id
+    ) VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.reportId}, #{item.fieldId})
+    </foreach>
+  </insert>
+  <delete id="deleteByFieldId">
+    delete from t_report_field
+    where Ffield_id = #{fieldId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByReportId">
+    delete from t_report_field
+    where Freport_id = #{reportId,jdbcType=INTEGER}
+  </delete>
+  <select id="selectFieldBy" resultMap="FieldMap">
+   SELECT
+   id, Ffield_name, Ffield_type, Frequired
+   FROM t_report_field LEFT JOIN t_field on t_report_field.Ffield_id = t_field.id
+   WHERE t_report_field.Freport_id = #{reportId,jdbcType=INTEGER}
+  </select>
+</mapper>

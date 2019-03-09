@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.FieldMapper">
+  <resultMap id="BaseResultMap" type="com.kg.report.model.po.FieldPO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="Ffield_name" jdbcType="VARCHAR" property="name" />
+    <result column="Ffield_type" jdbcType="SMALLINT" property="type" />
+    <result column="Frequired" jdbcType="SMALLINT" property="required" />
+    <result column="Fadd_time" jdbcType="TIMESTAMP" property="addTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, Ffield_name, Ffield_type, Frequired, Fadd_time
+  </sql>
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_field
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from t_field
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.kg.report.model.po.FieldPO" useGeneratedKeys="true">
+    insert into t_field (Ffield_name, Ffield_type, Frequired, 
+      Fadd_time)
+    values (#{name,jdbcType=VARCHAR}, #{type,jdbcType=SMALLINT}, #{required,jdbcType=SMALLINT}, 
+      NOW())
+  </insert>
+
+  <update id="update">
+    update t_field
+    set Ffield_name = #{name,jdbcType=VARCHAR},
+      Ffield_type = #{type,jdbcType=SMALLINT},
+      Frequired = #{required,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="nameExist" resultType="java.lang.String">
+    select
+    Ffield_name
+    from
+    t_field
+    where Ffield_name=#{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_field
+  </select>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.ReportMapper">
+    <resultMap id="BaseResultMap" type="com.kg.report.model.po.ReportPO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="Freport_name" jdbcType="VARCHAR" property="name"/>
+        <result column="Fdept_id" jdbcType="INTEGER" property="deptId"/>
+        <result column="Freport_type" jdbcType="SMALLINT" property="type"/>
+        <result column="Freport_deadline" jdbcType="VARCHAR" property="deadline"/>
+        <result column="Fadd_time" jdbcType="TIMESTAMP" property="addTime"/>
+        <result column="Fmodify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="Fmodify_user_id" jdbcType="INTEGER" property="modifyUserId"/>
+    </resultMap>
+    <resultMap id="ReportWithFieldIdMap" type="com.kg.report.model.po.ReportFieldListPO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="Freport_name" jdbcType="VARCHAR" property="name"/>
+        <result column="Freport_type" jdbcType="SMALLINT" property="type"/>
+        <result column="Freport_deadline" jdbcType="VARCHAR" property="deadline"/>
+        <result column="GROUP_CONCAT(f.Ffield_id SEPARATOR '_')" jdbcType="VARCHAR" property="fieldIdStr"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, Freport_name, Fdept_id, Freport_type, Freport_deadline, Fadd_time, Fmodify_time, 
+    Fmodify_user_id
+  </sql>
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from t_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.kg.report.model.po.ReportPO"
+            useGeneratedKeys="true">
+    insert into t_report (Freport_name, Fdept_id, Freport_type, 
+      Freport_deadline, Fadd_time, Fmodify_time, 
+      Fmodify_user_id)
+    values (#{name,jdbcType=VARCHAR}, #{deptId,jdbcType=INTEGER}, #{type,jdbcType=SMALLINT}, 
+      #{deadline,jdbcType=VARCHAR}, NOW(), NOW(),
+      #{modifyUserId,jdbcType=INTEGER})
+  </insert>
+    <update id="updateBy" parameterType="com.kg.report.model.po.ReportPO">
+    update t_report
+    set Freport_name = #{name,jdbcType=VARCHAR},
+      Fdept_id = #{deptId,jdbcType=INTEGER},
+      Freport_type = #{type,jdbcType=SMALLINT},
+      Freport_deadline = #{deadline,jdbcType=VARCHAR},
+      Fmodify_time = NOW(),
+      Fmodify_user_id = #{modifyUserId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectByDeptId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report
+        where Fdept_id = #{deptId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report
+    </select>
+    <select id="selectReportWithFieldId" resultMap="ReportWithFieldIdMap">
+        SELECT
+        r.id,
+        r.Freport_name,
+        r.Freport_type,
+        r.Freport_deadline,
+        GROUP_CONCAT(f.Ffield_id SEPARATOR '_')
+        FROM t_report r LEFT JOIN t_report_field f ON r.id = f.Freport_id
+        <where>
+            <if test="deptId > 0">
+                r.Fdept_id = #{deptId,jdbcType=INTEGER}
+            </if>
+        </where>
+        GROUP BY r.id
+    </select>
+</mapper>

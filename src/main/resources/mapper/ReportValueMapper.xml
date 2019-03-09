@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.ReportValueMapper">
+    <resultMap id="BaseResultMap" type="com.kg.report.model.po.ReportValuePO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="Freport_id" jdbcType="INTEGER" property="reportId"/>
+        <result column="Ffield_id" jdbcType="INTEGER" property="fieldId"/>
+        <result column="Fairport_id" jdbcType="INTEGER" property="airportId"/>
+        <result column="Ffield_value" jdbcType="VARCHAR" property="value"/>
+        <result column="Fmodify_value" jdbcType="VARCHAR" property="modifyValue"/>
+        <result column="Fstate" jdbcType="SMALLINT" property="state"/>
+        <result column="Fadd_time" jdbcType="TIMESTAMP" property="addTime"/>
+        <result column="Fmodify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="Fmodify_user_id" jdbcType="INTEGER" property="modifyUserId"/>
+        <result column="Fadd_day" jdbcType="VARCHAR" property="addDay" />
+    </resultMap>
+    <resultMap id="GroupResult" type="com.kg.report.model.po.ReportValueGroupPO">
+        <result column="Fadd_day" jdbcType="VARCHAR" property="addDay"/>
+        <result column="GROUP_CONCAT(id SEPARATOR '_')" jdbcType="VARCHAR" property="idStr"/>
+        <result column="GROUP_CONCAT(Freport_id SEPARATOR '_')" jdbcType="VARCHAR" property="reportIdStr"/>
+        <result column="GROUP_CONCAT(Fairport_id SEPARATOR '_')" jdbcType="VARCHAR" property="airportIdStr"/>
+        <result column="GROUP_CONCAT(Ffield_id SEPARATOR '_')" jdbcType="VARCHAR" property="fieldIdStr"/>
+        <result column="GROUP_CONCAT(Ffield_value SEPARATOR '_')" jdbcType="VARCHAR" property="fieldValueStr"/>
+        <result column="GROUP_CONCAT(Fstate SEPARATOR '_')" jdbcType="VARCHAR" property="stateStr"/>
+        <result column="GROUP_CONCAT(Fadd_time SEPARATOR '_')" jdbcType="VARCHAR" property="addTimeStr"/>
+        <result column="GROUP_CONCAT(Fmodify_time SEPARATOR '_')" jdbcType="VARCHAR" property="modifyTimeStr"/>
+    </resultMap>
+    <resultMap id="WriteResultMap" type="com.kg.report.model.po.FieldWritePO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="Freport_id" jdbcType="INTEGER" property="reportId"/>
+        <result column="Ffield_id" jdbcType="INTEGER" property="fieldId"/>
+        <result column="Fairport_id" jdbcType="INTEGER" property="airportId"/>
+        <result column="Ffield_value" jdbcType="VARCHAR" property="value"/>
+        <result column="Fname" jdbcType="VARCHAR" property="airportName"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, Freport_id, Ffield_id, Fairport_id, Ffield_value, Fmodify_value, Fstate, Fadd_time,
+    Fmodify_time, Fmodify_user_id, Fadd_day
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report_value
+        where Freport_id = #{reportId,jdbcType=INTEGER}
+        and Ffield_id = #{fieldId,jdbcType=INTEGER}
+        and Fairport_id = #{airportId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from t_report_value
+        where Freport_id = #{reportId,jdbcType=INTEGER}
+        and Ffield_id = #{fieldId,jdbcType=INTEGER}
+        and Fairport_id = #{airportId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.kg.report.model.po.ReportValuePO">
+        insert into t_report_value (Freport_id, Ffield_id, Fairport_id,
+        Ffield_value, Fmodify_value, Fstate,
+        Fadd_time, Fmodify_time, Fmodify_user_id,
+        Fadd_day
+        )
+        values (#{reportId,jdbcType=INTEGER}, #{fieldId,jdbcType=INTEGER}, #{airportId,jdbcType=INTEGER},
+        #{value,jdbcType=VARCHAR}, #{modifyValue,jdbcType=VARCHAR}, #{state,jdbcType=SMALLINT},
+        #{addTime,jdbcType=TIMESTAMP}, NOW(), #{modifyUserId,jdbcType=INTEGER}, #{addDay,jdbcType=VARCHAR}
+        )
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.kg.report.model.po.ReportValuePO">
+        update t_report_value
+            set Freport_id = #{reportId,jdbcType=INTEGER},
+              Ffield_id = #{fieldId,jdbcType=INTEGER},
+              Fairport_id = #{airportId,jdbcType=INTEGER},
+              Ffield_value = #{value,jdbcType=VARCHAR},
+              Fmodify_value = #{modifyValue,jdbcType=VARCHAR},
+              Fstate = #{state,jdbcType=SMALLINT},
+              Fmodify_time = NOW(),
+              Fmodify_user_id = #{modifyUserId,jdbcType=INTEGER}
+            where id = #{id,jdbcType=INTEGER}
+     </update>
+    <select id="selectBy" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report_value
+        <where>
+            <if test="addTimeStart != null">
+                AND Fadd_time &gt;= #{addTimeStart}
+            </if>
+            <if test="addTimeEnd != null">
+                AND Fadd_time &lt;= #{addTimeEnd}
+            </if>
+            <if test="airportId > 0">
+                AND Fairport_id = #{airportId}
+            </if>
+            <if test="reportId > 0">
+                AND Freport_id = #{reportId}
+            </if>
+        </where>
+        ORDER BY Fadd_time DESC
+    </select>
+    <select id="groupSelect" resultMap="GroupResult">
+        select
+        Fadd_day,
+        GROUP_CONCAT(id SEPARATOR '_'),
+        GROUP_CONCAT(Freport_id SEPARATOR '_'),
+        GROUP_CONCAT(Fairport_id SEPARATOR '_'),
+        GROUP_CONCAT(Ffield_id SEPARATOR '_'),
+        GROUP_CONCAT(Ffield_value SEPARATOR '_'),
+        GROUP_CONCAT(Fstate SEPARATOR '_'),
+        GROUP_CONCAT(Fmodify_time SEPARATOR '_'),
+        GROUP_CONCAT(Fadd_time SEPARATOR '_')
+        from t_report_value
+        <where>
+            <if test="addTimeStart != null">
+                AND Fadd_time &gt;= #{addTimeStart}
+            </if>
+            <if test="addTimeEnd != null">
+                AND Fadd_time &lt;= #{addTimeEnd}
+            </if>
+            <if test="airportId > 0">
+                AND Fairport_id = #{airportId}
+            </if>
+            <if test="reportId.length > 0">
+                AND Freport_id in
+                <foreach item="item" index="index" collection="reportId" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY Fadd_day
+        ORDER BY Fadd_day DESC
+    </select>
+    <select id="queryForExcel" resultMap="WriteResultMap">
+        select
+        v.id, v.Freport_id, v.Ffield_id, v.Fairport_id, v.Ffield_value, a.Fname
+        from t_report_value v LEFT JOIN t_airport a ON v.Fairport_id = a.Fid
+        <where>
+            <if test="addTimeStart != null">
+                AND Fadd_time &gt;= #{addTimeStart}
+            </if>
+            <if test="addTimeEnd != null">
+                AND Fadd_time &lt;= #{addTimeEnd}
+            </if>
+            <if test="airportId > 0">
+                AND Fairport_id = #{airportId}
+            </if>
+            <if test="reportId.length > 0">
+                AND Freport_id in
+                <foreach item="item" index="index" collection="reportId" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY Fadd_time DESC
+    </select>
+    <delete id="deleteByReportId">
+      delete from t_report_value
+        where Freport_id = #{reportId,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByReportIdAndFieldId">
+      delete from t_report_value
+        where Freport_id = #{reportId,jdbcType=INTEGER}
+        and Ffield_id = #{fieldId,jdbcType=INTEGER}
+    </delete>
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report_value
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+</mapper>

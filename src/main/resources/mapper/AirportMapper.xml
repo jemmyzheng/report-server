@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.AirportMapper">
+  <resultMap id="BaseResultMap" type="com.kg.report.model.po.AirportPO">
+    <id column="Fid" jdbcType="INTEGER" property="id" />
+    <result column="Fname" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Fid, Fname
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_airport
+    where Fid = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_airport
+    where Fid = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="Fid" keyProperty="id" parameterType="com.kg.report.model.po.AirportPO" useGeneratedKeys="true">
+    insert into t_airport (Fname)
+    values (#{name,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey">
+    update t_airport
+    set Fname = #{name,jdbcType=VARCHAR}
+    where Fid = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="nameExist" resultType="java.lang.String">
+    select
+    Fname
+    from
+    t_airport
+    where Fname = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_airport
+  </select>
+</mapper>

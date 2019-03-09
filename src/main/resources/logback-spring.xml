@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="true">
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <springProperty scope="context" name="LOG_HOME" source="logging.path"/>
+    <springProperty scope="context" name="serviceName" source="spring.application.name"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{YY-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger.%method\(\):%L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLINGFILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${serviceName}.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${serviceName}_%d{yyyy-MM-dd}_%i.log
+            </FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>50MB</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{YY-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger.%method\(\):%L - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.apache.zookeeper" level="INFO"/>
+    <logger name="io.netty.handler" level="INFO"/>
+    <logger name="druid.sql.Statement" 	level="DEBUG"/>
+    <logger name="druid.sql.ResultSet" 	level="DEBUG"/>
+    <logger name="druid.sql.Connection" level="DEBUG"/>
+
+    <!-- 日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ROLLINGFILE"/>
+    </root>
+
+</configuration>

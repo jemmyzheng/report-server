@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kg.report.service.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.kg.report.model.po.UserPO">
+        <result column="Fuser_id" jdbcType="INTEGER" property="userId"/>
+        <result column="Fname" jdbcType="VARCHAR" property="name"/>
+        <result column="Fphone" jdbcType="VARCHAR" property="phone"/>
+        <result column="Fpassword" jdbcType="VARCHAR" property="password"/>
+        <result column="Fdept_id" jdbcType="INTEGER" property="deptId"/>
+        <result column="Fstate" jdbcType="SMALLINT" property="state"/>
+        <result column="Frole" jdbcType="SMALLINT" property="role"/>
+        <result column="Fadd_time" jdbcType="TIMESTAMP" property="addTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+      Fuser_id,
+      Fname,
+      Fphone,
+      Fpassword,
+      Fdept_id,
+      Fstate,
+      Frole,
+      Fadd_time
+    </sql>
+    <select id="getUser" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where Fphone=#{phone} and Fstate != 0
+    </select>
+    <select id="getUserById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where Fuser_id = #{userId}
+    </select>
+    <select id="userExist" resultType="string">
+        select
+          Fphone
+        from t_user
+        where Fphone=#{phone} and Fstate != 0
+    </select>
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          Fuser_id,Fname,Fphone,Fdept_id,Fpassword,Fstate,Frole,Fadd_time
+        from
+          t_user
+        where Fstate != 0
+    </select>
+    <update id="editUser">
+        update t_user
+        set
+          Fname = #{name},
+          Fphone = #{phone},
+          <choose>
+              <when test="password != null">
+                  Fdept_id = #{deptId},
+                  Fpassword = #{password}
+              </when>
+              <otherwise>
+                  Fdept_id = #{deptId}
+              </otherwise>
+          </choose>
+        where
+          Fuser_id = #{userId}
+    </update>
+    <update id="updateUserState">
+        update t_user
+        set
+          Fstate = #{state}
+        where
+          Fuser_id = #{userId}
+    </update>
+    <insert id="addUser" parameterType="com.kg.report.model.po.UserPO" useGeneratedKeys="true" keyProperty="userId">
+        insert into t_user(
+                          Fname,
+                          Fphone,
+                          Fdept_id,
+                          Fpassword,
+                          Fstate,
+                          Frole,
+                          Fadd_time)
+        values (#{name}, #{phone}, #{deptId}, #{password}, #{state}, #{role}, NOW())
+    </insert>
+</mapper>
